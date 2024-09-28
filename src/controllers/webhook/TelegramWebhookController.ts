@@ -20,12 +20,19 @@ class TelegramWebhookController {
     console.log(data);
 
     try {
-      const chatId = decrypt(id, process.env.KEY);
+      const decrypted = decrypt(id, process.env.KEY);
+      const chatId = decrypted.split("-")[0];
+      const args = decrypted.split("-")[1];
       const isNumber = /^\d+$/.test(chatId);
       if (!isNumber) 
         throw new Error();
 
-      const message = typeof data === "string" ? data : JSON.stringify(data);
+      let message = ''
+      if (args == 'github')
+        message = `${data.zen}\n${data.repository.html_url}`
+      else 
+        message = typeof data === "string" ? data : JSON.stringify(data);
+
       TelegramWebhookService.sendTextChat(message, chatId);
 
       return c.json({ 

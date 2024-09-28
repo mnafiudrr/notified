@@ -4,15 +4,15 @@ import { Context } from "hono"
 
 class TelegramWebhookService {
   process = async(data: WebhookRequestType, c: Context): Promise<{data: any, error: boolean}> => {
-    const text = this.#getText(data);
-    if (text != "/createWebhook")
+    const { command, args, error } = this.#getText(data);
+    if (error || command !== "/createWebhook")
       return {
-        data: text,
+        data: null,
         error: false
       }
 
     const chatId = this.#getChatId(data)
-    const encrypted = encrypt(chatId.toString(), process.env.KEY);
+    const encrypted = encrypt(`${chatId.toString()}-${args}`, process.env.KEY);
 
     this.sendTextChat(`Your chat webhook: ${c.req.url}/${encrypted}`, chatId.toString());
     return {
@@ -48,8 +48,34 @@ class TelegramWebhookService {
   }
 
   #getText = (data: WebhookRequestType) => {
+    if (!data.message)
+      return {
+        command: "",
+        args: "",
+        error: true
+      }
+
+    if (!data.message.text)
+      return {
+        command: "",
+        args: "",
+        error: true
+      }
+
     const text = data.message.text
-    return text
+    return {
+      /**
+       * Command is the first word of the message
+       * For example, if the message is "/start Hello World", the command is "/start"
+       */
+      command: text?.split(" ")[0],
+      /**
+       * Args are the remaining words of the message
+       * For example, if the message is "/start Hello World", the args are "Hello World"
+       */
+      args: text?.split(" ").slice(1).join(" "),
+      error: false
+    }
   }
 }
 
