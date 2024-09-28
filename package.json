@@ -1,0 +1,16 @@
+{
+  "name": "notification",
+  "scripts": {
+    "dev": "bun run --hot src/index.ts"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "hono": "^4.6.3"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.25.3",
+    "@babel/preset-typescript": "^7.24.7",
+    "@types/bun": "latest",
+    "babel-plugin-module-resolver": "^5.0.2"
+  }
+}
