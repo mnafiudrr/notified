@@ -4,6 +4,13 @@ import { Context } from "hono"
 
 class TelegramWebhookService {
   process = async(data: WebhookRequestType, c: Context): Promise<{data: any, error: boolean}> => {
+    const text = this.#getText(data);
+    if (text != "/createWebhook")
+      return {
+        data: text,
+        error: false
+      }
+
     const chatId = this.#getChatId(data)
     const encrypted = encrypt(chatId.toString(), process.env.KEY);
 
@@ -38,6 +45,11 @@ class TelegramWebhookService {
   #getChatId = (data: WebhookRequestType) => {
     const chatId = data.message.chat.id
     return chatId
+  }
+
+  #getText = (data: WebhookRequestType) => {
+    const text = data.message.text
+    return text
   }
 }
 
