@@ -14,7 +14,7 @@ class TelegramWebhookService {
     const chatId = this.#getChatId(data)
     const encrypted = encrypt(`${chatId.toString()}-${args}`, process.env.KEY);
 
-    this.sendTextChat(`Your chat webhook: ${c.req.url}/${encrypted}`, chatId.toString());
+    this.sendTextChat(`Your chat webhook: https://${c.req.header("host")}/${encrypted}`, chatId.toString());
     return {
       data: encrypted,
       error: false
