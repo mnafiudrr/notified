@@ -3,10 +3,11 @@ import { WebhookRequestType } from "@/utils/types/TelegramWebhookTypes"
 import { Context } from "hono"
 
 class TelegramWebhookService {
-  process = async(data: WebhookRequestType): Promise<{data: any, error: boolean}> => {
+  process = async(data: WebhookRequestType, c: Context): Promise<{data: any, error: boolean}> => {
     const chatId = this.#getChatId(data)
     const encrypted = encrypt(chatId.toString(), process.env.KEY);
-    
+
+    this.sendTextChat(`Your chat webhook: ${c.req.url}/${encrypted}`, chatId.toString());
     return {
       data: encrypted,
       error: false

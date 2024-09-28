@@ -8,7 +8,7 @@ class TelegramWebhookController {
     console.log(c.req.url);
     console.log(data);
     
-    const {data: processedData, error} = await TelegramWebhookService.process(data);
+    const {data: processedData, error} = await TelegramWebhookService.process(data, c);
 
     return c.json({data: processedData, error})
   }
@@ -26,12 +26,10 @@ class TelegramWebhookController {
         throw new Error();
 
       const message = typeof data === "string" ? data : JSON.stringify(data);
-      const response = await TelegramWebhookService.sendTextChat(message, chatId);
+      TelegramWebhookService.sendTextChat(message, chatId);
 
       return c.json({ 
         message: 'success',
-        chatId: chatId,
-        data: response
       });
     } catch (error) {
         return c.json({ error: "Invalid ID" }, 400);
